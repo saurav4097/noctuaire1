@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
-import {connectDB} from "@/lib/mongodb";
+import { connectDB } from "@/lib/mongodb";
 import Dress from "@/models/Dress";
 
 export async function GET(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
     await connectDB();
 
-    // ✅ await params here
-    const { id } = await context.params;
+    const { id } = context.params;
 
     const dress = await Dress.findById(id);
 
