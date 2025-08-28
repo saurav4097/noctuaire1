@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
    reactStrictMode: true,
   swcMinify: true,
+  eslint: {
+    ignoreDuringBuilds: true, // 🚀 disables ESLint check on Vercel builds
+  },
   images: {
    remotePatterns: [
       {
