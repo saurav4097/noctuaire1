@@ -3,13 +3,13 @@ import { connectDB } from "@/lib/mongodb";
 import Dress from "@/models/Dress";
 
 export async function GET(
-  req: Request,
-  context: { params: { id: string } }
+req: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
     await connectDB();
 
-    const { id } = context.params;
+    const { id } = params;
 
     const dress = await Dress.findById(id);
 
