@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Dress from "@/models/Dress";
+import { NextRequest } from "next/server";
 
 export async function GET(
-req: Request,
-  { params }: { params: { id: string } }
+   request: NextRequest,
+  context: any 
 ) {
   try {
     await connectDB();
 
-    const { id } = params;
+    const dressId = context.params.id; // 👈 use `context.params`
 
-    const dress = await Dress.findById(id);
+    const dress = await Dress.findById(dressId);
 
     if (!dress) {
       return NextResponse.json({ error: "Dress not found" }, { status: 404 });
