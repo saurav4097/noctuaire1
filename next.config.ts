@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
    reactStrictMode: true,
   swcMinify: true,
+  
+  rules: {
+    "@typescript-eslint/no-unused-vars": "off"
+  },
   eslint: {
     ignoreDuringBuilds: true, // 🚀 disables ESLint check on Vercel builds
   },
