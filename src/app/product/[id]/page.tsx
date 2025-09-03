@@ -50,7 +50,7 @@ const router = useRouter();
       const prodData: Product[] = await resProd.json();
 
       const matched = prodData.filter((p) => p.dress_code === dressData.name);
-      const padded = [...matched, ...Array(3)].slice(0, 3);
+      const padded = [...matched, ...Array(3)].slice(0, 5);
 
 setProducts(padded);
     }

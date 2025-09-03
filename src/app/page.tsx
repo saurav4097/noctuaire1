@@ -72,19 +72,22 @@ const [dresses, setDresses] = useState<dress[]>([]);
           className="object-cover"
         />
         <div className="absolute bottom-6 left-0 w-full flex justify-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white px-4 py-2 rounded-lg">
+          <Link
+              href="/collection"
+              className="text-xl sm:text-2xl font-serif italic text-white hover:text-orange-500 transition"
+            >
             Explore All Collection
-          </h2>
+          </Link>
         </div>
       </section>
 {dresses && dresses.length > 0 ? (
-      
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full">
-        {dresses.map((dress) => (
+      <>
+      <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4 mt-8">
+        {dresses.slice(0, 8).map((dress) => (
           <Link
             key={dress._id}
             href={`/product/${dress._id}`} // 👈 navigate to series/[id]
-            className="relative w-full h-[60vh] sm:h-[70vh] lg:h-[80vh] group cursor-pointer"
+            className="relative w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] group cursor-pointer rounded-2xl overflow-hidden shadow-md"
           >
             <Image
               src={dress.image || "/front page.jpg"} // fallback
@@ -93,12 +96,22 @@ const [dresses, setDresses] = useState<dress[]>([]);
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-              <h2 className="text-white text-2xl font-bold">{dress.name}</h2>
+              <h2 className="text-white text-lg sm:text-xl lg:text-2xl font-bold text-center px-2">{dress.name}</h2>
             </div>
           </Link>
         ))}
       </section>
-
+      
+{/* Explore Luxury Link */}
+          <div className="flex justify-center mt-8">
+            <Link
+              href="/collection"
+              className="text-xl sm:text-2xl font-serif italic text-gray-900 hover:text-orange-500 transition"
+            >
+              Explore the  Collection →
+            </Link>
+          </div>
+        </>
       ) : (
   <p className="text-gray-500">No products found.</p>
 )}
@@ -125,6 +138,20 @@ const [dresses, setDresses] = useState<dress[]>([]);
             <Image
               src="/myntra.avif"
               alt="Myntra"
+              width={140}
+              height={70}
+              className="h-16 w-auto object-contain"
+            />
+            <Image
+              src="/ajio.jpg"
+              alt="Ajio"
+              width={140}
+              height={70}
+              className="h-16 w-auto object-contain"
+            />
+            <Image
+              src="/nykaa.png"
+              alt="Nykaa"
               width={140}
               height={70}
               className="h-16 w-auto object-contain"
