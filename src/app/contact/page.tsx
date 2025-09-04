@@ -75,9 +75,7 @@ export default function ContactPage() {
         <a href="https://in.pinterest.com/noctuaire1" target="_blank" rel="noopener noreferrer">
           <FaPinterest className="hover:text-red-600 transition" />
         </a>
-        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-          <FaLinkedin className="hover:text-blue-600 transition" />
-        </a>
+        
       </section>
 
       {/* Contact Form */}
