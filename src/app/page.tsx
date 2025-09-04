@@ -11,16 +11,24 @@ interface dress {
   image: string;
   description: string;
 }
-
+interface ads {
+   _id: string;
+  name: string;
+  image: string;
+  link: string;
+}
 
 export default function Home() {
 const [dresses, setDresses] = useState<dress[]>([]);
-
+const [adss, setAdss] = useState<ads[]>([]);
   useEffect(() => {
     async function fetchDresses() {
       const res = await fetch("/api/dress");
       const data = await res.json();
       setDresses(data);
+      const res2 = await fetch("/api/ads");
+      const data2 = await res2.json();
+      setAdss(data2);
     }
     fetchDresses();
   }, []);
@@ -80,6 +88,36 @@ const [dresses, setDresses] = useState<dress[]>([]);
           </Link>
         </div>
       </section>
+
+
+{adss && adss.length > 0 ? (
+  <section className="py-1"> {/* very small top/bottom space */}
+    <div className="flex justify-center">
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide px-2">
+        {adss.slice(0, 8).map((ads) => (
+          <Link
+            key={ads._id}
+            href={ads.link}
+            className="shrink-0" // prevents item shrinking
+          >
+            <Image
+              src={ads.image || "/front page.jpg"}
+              alt={ads.name}
+              width={160}      // base width
+              height={80}      // fixed height
+              className="h-70 w-auto object-contain sm:h-90 md:h-94" 
+              // h-20 = 80px, sm/md make it responsive
+            />
+          </Link>
+        ))}
+      </div>
+    </div>
+  </section>
+) : (
+  <p className="text-gray-500"></p>
+)}
+
+
 {dresses && dresses.length > 0 ? (
       <>
       <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4 mt-8">
