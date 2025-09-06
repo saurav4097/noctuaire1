@@ -14,19 +14,27 @@ interface Dress {
 
 export default function SeriesPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-
-  const [dresses, setDresses] = useState<Dress[]>([]);
+ 
+  const [maleDresses, setMaleDresses] = useState<Dress[]>([]);
+  const [femaleDresses, setFemaleDresses] = useState<Dress[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedGender, setSelectedGender] = useState<"male" | "female">("male");
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch(`/api/dress`);
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
+        // Fetch male dresses
+        const res1 = await fetch(`/api/dress`);
+        if (!res1.ok) throw new Error("Failed to fetch male dresses");
+        const data1 = await res1.json();
+        setMaleDresses(data1.dresses || data1);
 
-        setDresses(data.dresses || data);
+        // Fetch female dresses
+        const res2 = await fetch(`/api/dress2`);
+        if (!res2.ok) throw new Error("Failed to fetch female dresses");
+        const data2 = await res2.json();
+        setFemaleDresses(data2.dresses || data2);
       } catch (err) {
         console.error(err);
       } finally {
@@ -37,6 +45,9 @@ export default function SeriesPage({ params }: { params: Promise<{ id: string }>
   }, [id]);
 
   if (loading) return <p className="text-center mt-20">Loading...</p>;
+
+  // Select data based on gender
+  const dresses = selectedGender === "male" ? maleDresses : femaleDresses;
 
   // ✅ Filter dresses by search query
   const filteredDresses = dresses.filter((dress) =>
@@ -68,11 +79,43 @@ export default function SeriesPage({ params }: { params: Promise<{ id: string }>
           className="w-full md:w-1/2 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
         />
       </div>
+      <h2 className="text-xl  mb-5 text-gray-900 text-center font-[Playfair_Display] tracking-wide leading-snug">
+          {searchQuery ? `Results for "${searchQuery}"` : "Style isn’t about wearing more — it’s about choosing what defines your presence."}
+        </h2>
+
+        {/* Gender Toggle */}
+      <div className="flex justify-center gap-6 mb-6">
+        
+        <button
+          onClick={() => setSelectedGender("male")}
+          className={`px-6 py-2 rounded-lg font-medium border ${
+            selectedGender === "male"
+              ? "bg-black text-white border-black"
+              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+          }`}
+        >
+          Male
+        </button>
+        <button
+          onClick={() => setSelectedGender("female")}
+          className={`px-6 py-2 rounded-lg font-medium border ${
+            selectedGender === "female"
+              ? "bg-black text-white border-black"
+              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+          }`}
+        >
+          Female
+        </button>
+      </div>
 
       {/* All Dresses */}
       <section className="w-full">
-        <h2 className="text-xl  mb-5 text-gray-900 text-center font-[Playfair_Display] tracking-wide leading-snug">
-          {searchQuery ? `Results for "${searchQuery}"` : "Style isn’t about wearing more — it’s about choosing what defines your presence."}
+        <h2 className="text-xl mb-5 text-gray-900 text-center font-[Playfair_Display] tracking-wide leading-snug">
+          {searchQuery
+            ? `Results for "${searchQuery}"`
+            : selectedGender === "male"
+            ? "Explore Male Collection"
+            : "Explore Female Collection"}
         </h2>
 
         {filteredDresses.length > 0 ? (

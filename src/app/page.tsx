@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ObjectId } from "mongodb";
 
-interface dress {
+interface Dress {
    _id: string;
   name: string;
   image: string;
@@ -19,19 +19,36 @@ interface ads {
 }
 
 export default function Home() {
-const [dresses, setDresses] = useState<dress[]>([]);
+ const [maleDresses, setMaleDresses] = useState<Dress[]>([]);
+  const [femaleDresses, setFemaleDresses] = useState<Dress[]>([]);
 const [adss, setAdss] = useState<ads[]>([]);
+const [selectedGender, setSelectedGender] = useState<"male" | "female">("male");
   useEffect(() => {
-    async function fetchDresses() {
-      const res = await fetch("/api/dress");
-      const data = await res.json();
-      setDresses(data);
-      const res2 = await fetch("/api/ads");
-      const data2 = await res2.json();
-      setAdss(data2);
+    async function fetchData() {
+      try {
+        // Fetch male dresses
+        const res1 = await fetch("/api/dress");
+        const data1 = await res1.json();
+        setMaleDresses(data1);
+
+        // Fetch female dresses
+        const res2 = await fetch("/api/dress2");
+        const data2 = await res2.json();
+        setFemaleDresses(data2);
+
+        // Fetch ads
+        const res3 = await fetch("/api/ads");
+        const data3 = await res3.json();
+        setAdss(data3);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
     }
-    fetchDresses();
+    fetchData();
   }, []);
+   // Select dresses by gender
+  const dresses = selectedGender === "male" ? maleDresses : femaleDresses;
+
   return (
     <main className="min-h-screen bg-white text-gray-900">
       {/* Top Navbar */}
@@ -90,69 +107,89 @@ const [adss, setAdss] = useState<ads[]>([]);
       </section>
 
 
-{adss && adss.length > 0 ? (
-  <section className="py-1"> {/* very small top/bottom space */}
-    <div className="flex justify-center">
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide px-2">
-        {adss.slice(0, 8).map((ads) => (
-          <Link
-            key={ads._id}
-            href={ads.link}
-            className="shrink-0" // prevents item shrinking
-          >
-            <Image
-              src={ads.image || "/front page.jpg"}
-              alt={ads.name}
-              width={160}      // base width
-              height={80}      // fixed height
-              className="h-70 w-auto object-contain sm:h-90 md:h-94" 
-              // h-20 = 80px, sm/md make it responsive
-            />
-          </Link>
-        ))}
-      </div>
-    </div>
-  </section>
-) : (
-  <p className="text-gray-500"></p>
-)}
-
-
-{dresses && dresses.length > 0 ? (
-      <>
-      <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4 mt-8">
-        {dresses.slice(0, 8).map((dress) => (
-          <Link
-            key={dress._id}
-            href={`/product/${dress._id}`} // 👈 navigate to series/[id]
-            className="relative w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] group cursor-pointer rounded-2xl overflow-hidden shadow-md"
-          >
-            <Image
-              src={dress.image || "/front page.jpg"} // fallback
-              alt={dress.name}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-              <h2 className="text-white text-lg sm:text-xl lg:text-2xl font-bold text-center px-2">{dress.name}</h2>
+      {/* Ads Row */}
+      {adss && adss.length > 0 && (
+        <section className="py-1">
+          <div className="flex justify-center">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide px-2">
+              {adss.slice(0, 8).map((ads) => (
+                <Link key={ads._id} href={ads.link} className="shrink-0">
+                  <Image
+                    src={ads.image || "/front page.jpg"}
+                    alt={ads.name}
+                    width={160}
+                    height={80}
+                    className="h-70 w-auto object-contain sm:h-90 md:h-94"
+                  />
+                </Link>
+              ))}
             </div>
-          </Link>
-        ))}
-      </section>
-      
-{/* Explore Luxury Link */}
+          </div>
+        </section>
+      )}
+
+      {/* Gender Toggle */}
+      <div className="flex justify-center gap-6 mt-8">
+        <button
+          onClick={() => setSelectedGender("male")}
+          className={`px-6 py-2 rounded-lg font-medium border ${
+            selectedGender === "male"
+              ? "bg-black text-white border-black"
+              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+          }`}
+        >
+          Male
+        </button>
+        <button
+          onClick={() => setSelectedGender("female")}
+          className={`px-6 py-2 rounded-lg font-medium border ${
+            selectedGender === "female"
+              ? "bg-black text-white border-black"
+              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+          }`}
+        >
+          Female
+        </button>
+      </div>
+
+      {/* Dress Grid */}
+      {dresses && dresses.length > 0 ? (
+        <>
+          <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4 mt-8">
+            {dresses.slice(0, 8).map((dress) => (
+              <Link
+                key={dress._id}
+                href={`/product/${dress._id}`}
+                className="relative w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] group cursor-pointer rounded-2xl overflow-hidden shadow-md"
+              >
+                <Image
+                  src={dress.image || "/front page.jpg"}
+                  alt={dress.name}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                  <h2 className="text-white text-lg sm:text-xl lg:text-2xl font-bold text-center px-2">
+                    {dress.name}
+                  </h2>
+                </div>
+              </Link>
+            ))}
+          </section>
+
+          {/* Explore Link */}
           <div className="flex justify-center mt-8">
             <Link
               href="/collection"
               className="text-xl sm:text-2xl font-serif italic text-gray-900 hover:text-orange-500 transition"
             >
-              Explore the  Collection →
+              Explore the Collection →
             </Link>
           </div>
         </>
       ) : (
-  <p className="text-gray-500">No products found.</p>
-)}
+        <p className="text-gray-500 text-center mt-6">No products found.</p>
+      )}
 
       {/* Scrollable Row: Platforms */}
       <section className="px-4 mt-12">
