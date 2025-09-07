@@ -33,30 +33,48 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   const [dress, setDress] = useState<Dress | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
 const router = useRouter();
-  useEffect(() => {
-    async function fetchData() {
-      // 1️⃣ Get the Dress info
-      const resDress = await fetch(`/api/dress/${id}`);
-      if (!resDress.ok) {
-  // maybe log or set error state
-  console.error("Failed to fetch dress", resDress.status);
-  return;
-}
-      const dressData = await resDress.json();
-      setDress(dressData);
+useEffect(() => {
+  async function fetchData() {
+    try {
+      let dressData: Dress | null = null;
+      let dress2Data: Dress | null = null;
 
-      // 2️⃣ Get all products
+      // 🔹 First, try fetching from /api/dress
+      let resDress = await fetch(`/api/dress/${id}`);
+      if (resDress.ok) {
+        dressData = await resDress.json();
+      } else {
+        // 🔹 If not found, try /api/dress2
+        let resDress2 = await fetch(`/api/dress2/${id}`);
+        if (resDress2.ok) {
+          dress2Data = await resDress2.json();
+        } else {
+          console.error("ID not found in dress or dress2");
+          return;
+        }
+      }
+
+      // 🔹 Get all products
       const resProd = await fetch("/api/product");
       const prodData: Product[] = await resProd.json();
 
-      const matched = prodData.filter((p) => p.dress_code === dressData.name);
-      const padded = [...matched, ...Array(3)].slice(0, 5);
+      // 🔹 Match products by whichever dress exists
+      const matched = prodData.filter(
+        (p) =>
+          (dressData && p.dress_code === dressData.name) ||
+          (dress2Data && p.dress_code === dress2Data.name)
+      );
 
-setProducts(padded);
+      setProducts([...matched, ...Array(3)].slice(0, 5));
+      setDress(dressData || dress2Data);
+    } catch (err) {
+      console.error("Error fetching data:", err);
     }
+  }
 
-    fetchData();
-  }, [id]);
+  fetchData();
+}, [id]);
+
 
   if (!dress) {
     return <p className="text-center mt-20">Loading dress...</p>;
